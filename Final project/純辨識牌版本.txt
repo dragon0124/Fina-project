@@ -1,0 +1,206 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct pokers
+{
+	int num[5];
+	int suit[5];
+}poker;
+
+void incard(int num[], int suit[]);		//輸入牌
+int judge(int num[], int suit[]);		//判斷
+
+int main(void)
+{
+	poker player;
+
+	incard(player.num,player.suit);
+	judge(player.num, player.suit);
+
+	system("pause");
+	return 0;
+}
+void incard(int num[], int suit[])
+{
+	int i,j;
+	int a;
+	printf("請輸入5張不同的牌\n(黑桃 1 ,愛心 2 ,方塊 3 ,梅花 4)\n\n");
+
+	for (i = 0; i < 5; i++)
+	{
+		do
+		{
+			a = 0;
+			do
+			{
+				printf("輸入第%d張牌花色:", i + 1);
+				scanf_s("%d", &suit[i]);
+				if (suit[i]<1 || suit[i]>4)
+					printf("輸入錯誤請重新輸入\n");
+			} while (suit[i]<1 || suit[i]>4);
+			do
+			{
+				printf("輸入第%d張牌數字:", i + 1);
+				scanf_s("%d", &num[i]);
+				if (num[i]<1 || num[i]>13)
+					printf("輸入錯誤請重新輸入\n");
+			} while (num[i]<1 || num[i]>13);
+			for (j = 0; j < i; j++)
+			{
+				if ((num[i] == num[j]) && (suit[i] == suit[j]))
+				{
+					a = 1;
+					printf("重複輸入，請重新輸入\n");
+				}
+			}
+		} while (a==1);
+	}
+}
+int judge(int num[], int suit[])
+{
+	int i, j;
+	int a, b;
+	int suits=0;
+	int continues = 0;
+	int	judges;
+	int pokernum[13] = { 0 };
+	int renum[5] = {0};
+
+	for (i = 0; i < 4; i++)				//同花色
+	{
+		if (suit[i] == suit[i + 1])
+			suits = suits + 1;
+	}
+	for (i = 0; i < 5; i++)				//1~13的數字有幾個
+	{
+		pokernum[num[i] - 1] = pokernum[num[i] - 1] + 1;
+	}
+	for (i = 0; i < 9; i++)				//順子
+	{
+		if (((pokernum[i] == 1) && (pokernum[i + 1] == 1) && (pokernum[i + 2] == 1) && (pokernum[i + 3] == 1) && (pokernum[i + 4] == 1)) || ((pokernum[0] == 1) && (pokernum[9] == 1) && (pokernum[10] == 1) && (pokernum[11] == 1) && (pokernum[12] == 1)))
+			continues = 1;
+	}
+	for (i = 2; i < 5; i++)				//重複的數字，renum[i]為重複i次的有幾個數
+	{
+		for (j = 0; j < 13; j++)
+		{
+			if (pokernum[j] ==i)
+				renum[i] = renum[i] + 1;
+		}
+	}
+	if (renum[4] == 1)					//雜牌1 一對2 兩隊3 三支4 葫蘆5 鐵之6 順子7 桐花順8
+	{
+		for (i = 0; i < 13; i++)
+		{
+			if (pokernum[i] == 4)
+				a = i + 1;
+		}
+		printf("鐵支\t%d鐵",a);
+		judges = 6;
+	}
+	else if ((renum[3] ==1)&&( renum[2]==1))
+	{
+		for (i = 0; i < 13; i++)
+		{
+			if (pokernum[i] == 3)
+				a = i + 1;
+		}
+		printf("葫蘆\t%d蘆",a);
+		judges = 5;
+	}
+	else if (renum[3] == 1)
+	{
+		for (i = 0; i < 13; i++)
+		{
+			if (pokernum[i] == 3)
+				a = i + 1;
+		}
+		printf("三條\t三條%d",a);
+		judges = 4;
+	}
+	else if (renum[2] == 2)
+	{
+		printf("兩對");
+		for (i = 0; i < 13; i++)
+		{
+			if (pokernum[i] == 2)
+			{
+				a = i + 1;
+				printf("\t%d啤", a);
+			}
+		}
+		judges = 3;
+	}
+	else if (renum[2] == 1)
+	{
+		for (i = 0; i < 13; i++)
+		{
+			if (pokernum[i] == 2)
+				a = i + 1;
+		}
+		printf("一對\t%d啤",a);
+		judges = 2;
+	}
+	else if ((suits == 4) && (continues == 1))
+	{
+		for (i = 0; i < 9; i++)
+		{
+			if ((pokernum[i] == 1) && (pokernum[i + 1] == 1) && (pokernum[i + 2] == 1) && (pokernum[i + 3] == 1) && (pokernum[i + 4] == 1))
+			{
+				a = i+1;
+				b = a + 4;
+			}
+			else if ((pokernum[0] == 1) && (pokernum[9] == 1) && (pokernum[10] == 1) && (pokernum[11] == 1) && (pokernum[12] == 1))
+			{
+				a = 10;
+				b = 1;
+			}
+		}
+		printf("桐花順\t");
+		switch (suit[0])
+		{
+		case 1:
+			printf("黑桃");
+			break;
+		case 2:
+			printf("愛心");
+			break;
+		case 3:
+			printf("方塊");
+			break;
+		case 4:
+			printf("梅花");
+			break;
+		default:
+			break;
+		}
+		printf(" %d~%d", a, b);
+		judges = 8;
+	}
+	else if (continues == 1)
+	{
+		for (i = 0; i < 9; i++)
+		{
+			if ((pokernum[i] == 1) && (pokernum[i + 1] == 1) && (pokernum[i + 2] == 1) && (pokernum[i + 3] == 1) && (pokernum[i + 4] == 1))
+			{
+				printf("%d\t%d\t%d\t%d\t%d\t", pokernum[i],pokernum[i + 1],pokernum[i + 2],pokernum[i + 3],pokernum[i + 4]);
+				a = i + 1;
+				b = a + 5;
+			}
+			else
+			{
+				a = 10;
+				b = 1;
+			}
+		}
+		printf("順子\t%d~%d",a,b);
+		judges = 7;
+	}
+	else
+	{
+		printf("雜牌");
+		judges = 1;
+	}
+	printf("\n");
+	return judges;
+}
